@@ -59,6 +59,10 @@ public:
 	void forEachCell(unsigned int field_id,
 		std::function<void(unsigned int, Eigen::AlignedBox3d const&, unsigned int)> const& cb) const;
 
+	std::vector<std::vector<double>> const& nodes() const { return m_nodes; }
+	std::vector<std::vector<std::array<unsigned int, 32>>> const& cells() const { return m_cells; }
+	std::vector<std::vector<unsigned int>> const& cellMap() const { return m_cell_map; }
+
 private:
 
 	Eigen::Vector3d indexToNodePosition(unsigned int l) const;
