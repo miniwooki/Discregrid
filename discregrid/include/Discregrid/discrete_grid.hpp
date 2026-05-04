@@ -87,6 +87,9 @@ public:
 	Eigen::Vector3d const& cellSize() const { return m_cell_size;}
 	Eigen::Vector3d const& invCellSize() const { return m_inv_cell_size;}
 
+	std::size_t nFields() const { return m_n_fields; }
+	std::size_t nCells() const { return m_n_cells; }
+
 protected:
 
 
