@@ -11,6 +11,7 @@
 #include <set>
 #include <chrono>
 #include <future>
+#include <cassert>
 
 using namespace Eigen;
 
