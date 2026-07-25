@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <array>
+#include <functional>
 #include <Eigen/Dense>
 
 namespace Discregrid
@@ -17,6 +18,8 @@ public:
 	using MultiIndex = std::array<unsigned int, 3>;
 	using Predicate = std::function<bool(Eigen::Vector3d const&, double)>;
 	using SamplePredicate = std::function<bool(Eigen::Vector3d const&)>;
+	/** Progress in percent [0, 100]. */
+	using ProgressCallback = std::function<void(double)>;
 
 	DiscreteGrid() = default;
 	DiscreteGrid(Eigen::AlignedBox3d const& domain, std::array<unsigned int, 3> const& resolution)
@@ -32,8 +35,12 @@ public:
 	virtual void save(std::string const& filename) const = 0;
 	virtual void load(std::string const& filename) = 0;
 
-	virtual unsigned int addFunction(ContinuousFunction const& func, bool verbose = false,
-		SamplePredicate const& pred = nullptr) = 0;
+	/**
+	 * @param report_progress If true, progress percentage is reported via progress_cb (or stdout if progress_cb is null).
+	 * @param progress_cb Optional callback receiving construction progress in percent [0, 100].
+	 */
+	virtual unsigned int addFunction(ContinuousFunction const& func, bool report_progress = false,
+		SamplePredicate const& pred = nullptr, ProgressCallback const& progress_cb = nullptr) = 0;
 
 	double interpolate(Eigen::Vector3d const& xi, Eigen::Vector3d* gradient = nullptr) const
 	{

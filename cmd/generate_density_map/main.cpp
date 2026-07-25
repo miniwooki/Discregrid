@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <array>
 
 #include "sph_kernel.hpp"
@@ -130,6 +131,11 @@ int main(int argc, char* argv[])
 			}
 
 			return -6.0 * h < dist + cell_diag && dist - cell_diag < 2.0 * h;
+		}, [](double percent)
+		{
+			std::cout << "\r"
+					  << "Construction " << std::setw(20)
+					  << percent << "%";
 		});
 
 		if (result["no-reduction"].count() == 0u)

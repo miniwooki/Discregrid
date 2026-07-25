@@ -779,8 +779,9 @@ void CubicLagrangeDiscreteGrid::load(std::string const &filename)
 }
 
 unsigned int
-CubicLagrangeDiscreteGrid::addFunction(ContinuousFunction const &func, bool verbose,
-									   SamplePredicate const &pred)
+CubicLagrangeDiscreteGrid::addFunction(ContinuousFunction const &func, bool report_progress,
+									   SamplePredicate const &pred,
+									   ProgressCallback const &progress_cb)
 {
 	using namespace std::chrono;
 
@@ -817,14 +818,22 @@ CubicLagrangeDiscreteGrid::addFunction(ContinuousFunction const &func, bool verb
 			else
 				c = std::numeric_limits<double>::max();
 
-			if (verbose && (++counter == n_nodes || duration_cast<milliseconds>(high_resolution_clock::now() - t0).count() > 1000u))
+			if (report_progress && (++counter == n_nodes || duration_cast<milliseconds>(high_resolution_clock::now() - t0).count() > 1000u))
 			{
-				std::async(std::launch::async, [&]() {
+				auto percent = 100.0 * static_cast<double>(counter) / static_cast<double>(n_nodes);
+				std::async(std::launch::async, [&mutex, &t0, percent, progress_cb]() {
 					mutex.lock();
 					t0 = high_resolution_clock::now();
-					std::cout << "\r"
-							  << "Construction " << std::setw(20)
-							  << 100.0 * static_cast<double>(counter) / static_cast<double>(n_nodes) << "%";
+					if (progress_cb)
+					{
+						progress_cb(percent);
+					}
+					else
+					{
+						std::cout << "\r"
+								  << "Construction " << std::setw(20)
+								  << percent << "%";
+					}
 					mutex.unlock();
 				});
 			}
@@ -891,8 +900,12 @@ CubicLagrangeDiscreteGrid::addFunction(ContinuousFunction const &func, bool verb
 	cell_map.resize(m_n_cells);
 	std::iota(cell_map.begin(), cell_map.end(), 0u);
 
-	if (verbose)
+	if (report_progress)
 	{
+		if (progress_cb)
+		{
+			progress_cb(100.0);
+		}
 		std::cout << "\rConstruction took " << std::setw(15) << static_cast<double>(duration_cast<milliseconds>(high_resolution_clock::now() - t0_construction).count()) / 1000.0 << "s" << std::endl;
 	}
 

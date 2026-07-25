@@ -6,6 +6,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <array>
 
 using namespace Eigen;
@@ -102,7 +103,12 @@ int main(int argc, char* argv[])
 		}
 
 		std::cout << "Generate discretization..." << std::endl;
-		sdf.addFunction(func, true);
+		sdf.addFunction(func, true, nullptr, [](double percent)
+		{
+			std::cout << "\r"
+					  << "Construction " << std::setw(20)
+					  << percent << "%";
+		});
 		std::cout << "DONE" << std::endl;
 
 		std::cout << "Serialize discretization...";

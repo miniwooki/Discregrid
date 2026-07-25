@@ -16,8 +16,8 @@ public:
 	void save(std::string const& filename) const override;
 	void load(std::string const& filename) override;
 
-	unsigned int addFunction(ContinuousFunction const& func, bool verbose = false,
-		SamplePredicate const& pred = nullptr) override;
+	unsigned int addFunction(ContinuousFunction const& func, bool report_progress = false,
+		SamplePredicate const& pred = nullptr, ProgressCallback const& progress_cb = nullptr) override;
 
 
 	std::size_t nCells() const { return m_n_cells; };
